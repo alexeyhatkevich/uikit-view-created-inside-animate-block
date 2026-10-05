@@ -6,6 +6,27 @@ any view you **create and lay out synchronously inside**
 from its initial state (`frame == CGRectZero`, `cornerRadius == 0`) to the values
 you set a line later.
 
+## How to run
+
+1. Open `Demo/Demo.xcodeproj` in Xcode (it references this package locally).
+2. Pick any iPhone simulator (iOS 17+) and press **⌘R**.
+3. Use the **Naive / Fixed / No-anim** switch, then tap **Next page**. Slow motion
+   (1.5 s) is on by default.
+   - **Naive**: watch the dots under the pages. Every dot is rebuilt inside the
+     animation block, so each new dot flies in from the top-left corner and the
+     selected pill grows out of a square.
+   - **Fixed** / **No-anim**: the pages still slide, but the dots just switch to
+     the new state in place.
+4. **⌘U** runs the package's XCTest suite (`AnimateBlockPitfallTests`) on the
+   simulator. The tests that assert the naive bug exists are expected to pass.
+
+`swift test` on macOS does not apply: the library is UIKit-only, so the tests
+need an iOS simulator (use Xcode or the `xcodebuild` command below).
+
+The Xcode project is generated with [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+from `Demo/project.yml` (`cd Demo && xcodegen generate`); the generated project is
+committed, so you don't need XcodeGen to run it.
+
 ## The problem
 
 A horizontal pager with a dot indicator. On every page snap the "selected" pill
