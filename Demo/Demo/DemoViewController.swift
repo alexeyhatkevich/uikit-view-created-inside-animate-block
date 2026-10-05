@@ -98,6 +98,8 @@ final class DemoViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        // The stack view sizes stripContainer in its own layout pass; run it now.
+        stripContainer.superview?.layoutIfNeeded()
         if strip == nil || strip?.bounds.width != stripContainer.bounds.width {
             rebuildStrip()
         }
