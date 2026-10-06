@@ -58,6 +58,11 @@ final class DemoViewController: UIViewController {
         view.backgroundColor = .systemBackground
 
         segmented.selectedSegmentIndex = Variant.naive.rawValue
+        switch UserDefaults.standard.string(forKey: "mode")?.lowercased() {
+        case "fixed": segmented.selectedSegmentIndex = Variant.fixed.rawValue
+        case "noanim", "no-anim": segmented.selectedSegmentIndex = Variant.performWithoutAnimation.rawValue
+        default: break
+        }
         segmented.accessibilityIdentifier = "variant"
         segmented.addTarget(self, action: #selector(variantChanged), for: .valueChanged)
 
@@ -102,6 +107,33 @@ final class DemoViewController: UIViewController {
         stripContainer.superview?.layoutIfNeeded()
         if strip == nil || strip?.bounds.width != stripContainer.bounds.width {
             rebuildStrip()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        runScriptIfRequested()
+    }
+
+    /// Launch arguments for scripted runs:
+    /// `-mode naive|fixed|noanim` picks the variant, `-autorun 1` taps "Next page" once
+    /// shortly after launch, and `-freeze <seconds>` pauses every animation in the window
+    /// that long after the tap, so a screenshot can show a single mid-animation frame.
+    private var didRunScript = false
+    private func runScriptIfRequested() {
+        let defaults = UserDefaults.standard
+        guard !didRunScript, defaults.bool(forKey: "autorun") else { return }
+        didRunScript = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self else { return }
+            self.nextPage()
+            let freeze = defaults.double(forKey: "freeze")
+            guard freeze > 0, let layer = self.view.window?.layer else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + freeze) {
+                let now = layer.convertTime(CACurrentMediaTime(), from: nil)
+                layer.speed = 0
+                layer.timeOffset = now
+            }
         }
     }
 

@@ -17,6 +17,11 @@ you set a line later.
      selected pill grows out of a square.
    - **Fixed** / **No-anim**: the pages still slide, but the dots just switch to
      the new state in place.
+   - **Scripted run**: launch arguments `-mode naive|fixed|noanim`, `-autorun 1` (taps
+     **Next page** once, a second after launch) and `-freeze <seconds>` (pauses all
+     animations that long after the tap, to inspect one mid-animation frame), e.g.
+     `xcrun simctl launch booted com.alexeyhatkevich.uikit-view-created-inside-animate-block.demo -mode naive -autorun 1 -freeze 0.5`.
+     In Xcode, add them under *Edit Scheme > Run > Arguments*.
 4. **⌘U** runs the package's XCTest suite (`AnimateBlockPitfallTests`) on the
    simulator. The tests that assert the naive bug exists are expected to pass.
 
